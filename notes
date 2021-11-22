@@ -1,0 +1,11 @@
+
+
+mysql> create database ventas;
+Query OK, 1 row affected (0.10 sec)
+
+mysql> CREATE USER 'ventas'@'localhost' IDENTIFIED BY 'ventas';
+Query OK, 0 rows affected (0.14 sec)
+
+mysql> GRANT ALL PRIVILEGES ON `ventas` . * TO 'ventas'@'localhost'
+    -> ;
+Query OK, 0 rows affected (0.09 sec)
