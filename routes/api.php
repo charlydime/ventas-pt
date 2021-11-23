@@ -24,6 +24,7 @@ Route::resource('Cliente','ClienteController',[ 'only'=>['show','update','index'
 Route::get('/Producto/activos','ProductoController@activos');
 Route::resource('Producto','ProductoController',[ 'except'=>['create','edit',]]);
 
+Route::get('/Ventas/recalcula/{idVenta}','VentaController@recalcula');
 Route::get('/Ventas/listar','VentaController@listar');
 Route::resource('Ventas','VentaController',[ 'except'=>['create','edit']]);
 

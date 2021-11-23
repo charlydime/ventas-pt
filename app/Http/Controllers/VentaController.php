@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Venta;
+use App\Detalle;
 
 class VentaController extends Controller
 {
@@ -117,6 +118,7 @@ class VentaController extends Controller
         if($cambioEnCampo){
             
             $venta->save();
+            
             return response()->json(['status'=>'ok','data'=>$venta], 200);
         }else{
             
@@ -153,6 +155,7 @@ class VentaController extends Controller
 
         $venta->delete();
         
+        
         return response()->json(['code'=>204,'message'=>'Se ha eliminado'],204);
 
     }
@@ -163,4 +166,40 @@ class VentaController extends Controller
                 'data'=>   Venta::with('cliente')->get() 
             ], 200);        
     }
+    public function recalcula($idVenta){
+
+        $detalle =  Detalle::where('IdVenta', $idVenta)->get();
+        $venta = Venta::find($idVenta);
+        $suma = 0;
+        
+        foreach ($detalle as $det) {
+            $precio = (float)$det->producto->precio;
+            $can = (float)$det->cantidad;
+            $subtotal = $precio*$can;
+            $suma += $subtotal; 
+            
+        }
+
+        $iva = $suma * 0.15 ;
+        $descuento = 0.0;
+        if ( $venta->descuento > 0 ){
+            $descuento = ($venta->descuento/100) * $suma;
+            
+        }
+        
+        $total = $iva + $suma - $descuento;
+
+        $venta->iva = $iva;
+        $venta->total = $total;
+        
+
+        $venta->save();
+
+        return response()->json(['datos'=> $venta ],202);
+
+
+        $detalle =  Detalle::where('IdVenta', $idVenta)->with('producto')->get();
+
+    }
+
 }

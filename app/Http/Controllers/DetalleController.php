@@ -48,7 +48,7 @@ class DetalleController extends Controller
         
         $detalle=Detalle::create($request->all());
 
-        
+        $this->recalcula($request->input('IdVenta'));
         
         //  $detalle=Detalle::create([
         //    'IdProducto' => $request->input('IdProducto'),
@@ -168,15 +168,24 @@ class DetalleController extends Controller
             ], 200);        
     }
 
-    function recalcula($idVenta){
+    public function recalcula($idVenta){
 
-        $detalle =  Detalle::where('IdVenta', $idVenta)->with('producto');
-
+        $detalle =  Detalle::where('IdVenta', $idVenta)->with('producto')->get();
+        $precio = 0 ;
+        $can = 0;
         foreach ($detalle as $det) {
-            $p = $detalle->producto->precio;
-            return "hola";
+            $precio = (float)$det->producto->precio;
+            $can = (float)$det->cantidad;
+            $subtotal = $precio*$can;
+                        
+            $detalleNuevo = Detalle::find($det->Id_Detalle); 
+
+            $detalleNuevo->subtotal = $subtotal;
+            $detalleNuevo->save();
         }
 
+        $detalle =  Detalle::where('IdVenta', $idVenta)->with('producto')->get();
+        return response()->json(['datos'=> $detalle ],202);
 
     }
 }
